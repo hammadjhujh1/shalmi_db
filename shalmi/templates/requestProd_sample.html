@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Request Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF; /* White background */
+            color: #003366; /* Dark blue text */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #E83737; /* Brick red border */
+            border-radius: 5px;
+            background-color: #F9F9F9; /* Light gray background for the container */
+        }
+
+        h1 {
+            text-align: center;
+            color: #E83737; /* Brick red heading */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #003366; /* Dark blue border */
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #E83737; /* Brick red button */
+            color: #FFFFFF; /* White text */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #C82828; /* Darker red on hover */
+        }
+
+        #request-status {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Request Product Sample</h1>
+        <form id="sample-request-form">
+            <div class="form-group">
+                <label for="product-name">Product Name:</label>
+                <input type="text" id="product-name" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" required>
+            </div>
+            <div class="form-group">
+                <label for="shipping-address">Shipping Address:</label>
+                <textarea id="shipping-address" rows="4" required></textarea>
+            </div>
+            <button type="submit">Request Sample</button>
+        </form>
+        <div id="request-status"></div>
+    </div>
+
+    <script>
+        document.getElementById('sample-request-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Simulate sending sample request to the seller
+            const productName = document.getElementById('product-name').value;
+            const quantity = document.getElementById('quantity').value;
+            const shippingAddress = document.getElementById('shipping-address').value;
+
+            // Here you would typically send the sample request to a backend service
+            // For demonstration, we'll just simulate a successful request response
+            setTimeout(() => {
+                document.getElementById('request-status').innerText = 'Sample Request Successful! We will send the sample to your address.';
+                document.getElementById('sample-request-form').reset(); // Reset form fields
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

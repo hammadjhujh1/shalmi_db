@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9; /* Light gray background */
+            color: #333; /* Dark gray text */
+        }
+
+        header {
+            background: #003366; /* Dark blue background for header */
+            color: #ffffff; /* White text */
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff; /* White background for tracking */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #E83737; /* Reddish color for tracking */
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .order-info {
+            margin-top: 20px;
+        }
+
+        .tracking-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+
+        .status {
+            font-weight: bold;
+            color: #E83737; /* Reddish color for status */
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666; /* Darker gray for footer text */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Order Tracking</h1>
+    </header>
+
+    <div class="container">
+        <h2>Track Your Order</h2>
+        <div class="order-info" id="order-info">
+            <!-- Order tracking information will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 My Store. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Function to get the current date in YYYY-MM-DD format
+        function getCurrentDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Example tracking data - in practice, this would come from a backend
+        const trackingData = [
+            { status: 'Order Placed', date: getCurrentDate() }, // Current date for the first status
+            { status: 'Processing', date: '2024-10-02' },
+            { status: 'Shipped', date: '2024-10-03' },
+            { status: 'Out for Delivery', date: '2024-10-04' },
+            { status: 'Delivered', date: '2024-10-05' }
+        ];
+
+        function updateTrackingInfo() {
+            const orderContainer = document.getElementById('order-info');
+            orderContainer.innerHTML = ''; // Clear previous items
+
+            trackingData.forEach(item => {
+                const trackingItemDiv = document.createElement('div');
+                trackingItemDiv.className = 'tracking-item';
+                trackingItemDiv.innerHTML = `
+                    <span>${item.date}</span>
+                    <span class="status">${item.status}</span>
+                `;
+                orderContainer.appendChild(trackingItemDiv);
+            });
+        }
+
+        // Update tracking info display on page load
+        window.onload = updateTrackingInfo;
+    </script>
+</body>
+</html>

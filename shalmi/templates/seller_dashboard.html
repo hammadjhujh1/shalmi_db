@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9; /* Light gray background */
+            color: #333; /* Dark gray text */
+        }
+
+        header {
+            background: #003366; /* Dark blue background for header */
+            color: #ffffff; /* White text */
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff; /* White background for the dashboard */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #003366; /* Dark blue */
+            margin-bottom: 30px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: #E83737; /* Reddish color for cards */
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            margin: 0 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px); /* Lift effect */
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+        }
+
+        .product-list {
+            margin-top: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #003366; /* Dark blue for table header */
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Seller Dashboard</h1>
+    </header>
+
+    <div class="container">
+        <div class="metric">
+            <div class="metric-card">
+                <h2>Total Sales</h2>
+                <p id="total-sales">₨ 0</p>
+            </div>
+            <div class="metric-card">
+                <h2>Total Products</h2>
+                <p id="total-products">0</p>
+            </div>
+            <div class="metric-card">
+                <h2>Inventory Count</h2>
+                <p id="inventory-count">0</p>
+            </div>
+        </div>
+
+        <div class="product-list">
+            <h2>Your Products</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Price (PKR)</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody id="product-table-body">
+                    <!-- Product rows will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 My Store. All rights reserved.</p>
+    </footer>
+
+    <script>
+        async function fetchSellerData() {
+            try {
+                const response = await fetch('https://api.example.com/seller/dashboard', { // Replace with your API endpoint
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer YOUR_TOKEN_HERE' // Add token if needed
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('total-sales').innerText = `₨ ${data.totalSales}`;
+                    document.getElementById('total-products').innerText = data.totalProducts;
+                    document.getElementById('inventory-count').innerText = data.inventoryCount;
+
+                    const productTableBody = document.getElementById('product-table-body');
+                    data.products.forEach(product => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${product.id}</td>
+                            <td>${product.name}</td>
+                            <td>₨ ${product.price}</td>
+                            <td>${product.stock}</td>
+                        `;
+                        productTableBody.appendChild(row);
+                    });
+                } else {
+                    alert('Failed to load seller data.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while fetching data. Please try again later.');
+            }
+        }
+
+        // Fetch seller data when the page loads
+        window.onload = fetchSellerData;
+    </script>
+</body>
+</html>

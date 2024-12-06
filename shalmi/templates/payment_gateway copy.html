@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway - Shalmi Online</title>
+    <link rel="stylesheet" href="shalmi_online.css">
+</head>
+<body>
+    <div class="payment-container">
+        <h1>Shalmi Online - Payment Gateway</h1>
+
+        <form action="/process-payment" method="POST" class="payment-form">
+            <div class="input-group">
+                <label for="cardholder-name">Cardholder Name</label>
+                <input type="text" id="cardholder-name" name="cardholder_name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="card-number">Card Number</label>
+                <input type="text" id="card-number" name="card_number" required>
+            </div>
+
+            <div class="input-group">
+                <label for="expiry-date">Expiry Date</label>
+                <input type="text" id="expiry-date" name="expiry_date" placeholder="MM/YY" required>
+            </div>
+
+            <div class="input-group">
+                <label for="cvv">CVV</label>
+                <input type="password" id="cvv" name="cvv" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Pay Now</button>
+
+            <p class="security-info">Your payment is secured by our trusted partners.</p>
+        </form>
+    </div>
+</body>
+</html>

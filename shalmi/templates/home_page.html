@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Landing Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Dropdown visibility */
+        .dropdown-content {
+            display: none;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white py-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-900">Welcome to Our Store</h1>
+            <nav class="flex space-x-8" aria-label="Main navigation">
+                <ul class="flex space-x-8">
+                    <li><a href="#trending" class="text-blue-900 hover:text-orange-500 font-semibold">Trending Items</a></li>
+                    <li><a href="#top-selling" class="text-blue-900 hover:text-orange-500 font-semibold">Top Selling Products</a></li>
+                    <li><a href="#categories" class="text-blue-900 hover:text-orange-500 font-semibold">Categories</a></li>
+                    <li><a href="#highlights" class="text-blue-900 hover:text-orange-500 font-semibold">Platform Highlights</a></li>
+                </ul>
+                <!-- Sign In, Sign Up, Cart Buttons -->
+                <div class="flex space-x-4">
+                    <a href="#" class="text-blue-900 hover:text-orange-500 font-semibold">Sign In</a>
+                    <a href="#" class="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800">Sign Up</a>
+                    <a href="#" class="flex items-center space-x-2 text-blue-900 hover:text-orange-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18l-1.68 9.68a4 4 0 01-3.98 3.32H8.66a4 4 0 01-3.98-3.32L3 3zm9 12a3 3 0 100-6 3 3 0 000 6z" />
+                        </svg>
+                        <span>Cart</span>
+                    </a>
+                    <!-- Profile Dropdown -->
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-2 text-blue-900 hover:text-orange-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 20.5a9.5 9.5 0 0115 0M12 14c2.21 0 4-1.79 4-4s-1.79-4 4-4" />
+                            </svg>
+                            <span>Profile</span>
+                        </button>
+                        <div class="absolute right-0 w-48 bg-white border border-gray-200 rounded shadow-lg mt-2 dropdown-content">
+                            <a href="/profile.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">View Profile</a>
+                            <a href="/favorites.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Favorites</a>
+                            <a href="/signout.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="bg-cover bg-center h-80 flex flex-col justify-center items-center text-center text-white" style="background-image: url('https://via.placeholder.com/1200x400');" aria-label="Hero Image">
+        <h1 class="text-4xl font-bold">Discover Your Next Favorite Product</h1>
+        <p class="mt-4 text-lg">Shop the latest trends and top-selling items at unbeatable prices.</p>
+        <button class="mt-6 px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">Shop Now</button>
+    </div>
+
+    <!-- Trending Items Section -->
+    <section id="trending" class="my-12">
+        <div class="container mx-auto">
+            <h2 class="text-3xl text-white bg-blue-900 py-2 text-center rounded">Trending Items</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6" id="trending-items">
+                <!-- Example product items (replace with real data) -->
+                <div class="product bg-gray-50 p-4 shadow-lg rounded-lg text-center">
+                    <img src="https://via.placeholder.com/200" alt="Trending Product 1" class="mx-auto mb-4 rounded-lg">
+                    <h3 class="text-xl font-semibold">Product 1</h3>
+                    <p class="text-gray-600 mt-2">$49.99</p>
+                    <a href="#" class="inline-block mt-4 px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800">View Product</a>
+                </div>
+                <div class="product bg-gray-50 p-4 shadow-lg rounded-lg text-center">
+                    <img src="https://via.placeholder.com/200" alt="Trending Product 2" class="mx-auto mb-4 rounded-lg">
+                    <h3 class="text-xl font-semibold">Product 2</h3>
+                    <p class="text-gray-600 mt-2">$59.99</p>
+                    <a href="#" class="inline-block mt-4 px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800">View Product</a>
+                </div>
+                <div class="product bg-gray-50 p-4 shadow-lg rounded-lg text-center">
+                    <img src="https://via.placeholder.com/200" alt="Trending Product 3" class="mx-auto mb-4 rounded-lg">
+                    <h3 class="text-xl font-semibold">Product 3</h3>
+                    <p class="text-gray-600 mt-2">$69.99</p>
+                    <a href="#" class="inline-block mt-4 px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800">View Product</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Selling Products Section -->
+    <section id="top-selling" class="my-12">
+        <div class="container mx-auto">
+            <h2 class="text-3xl text-white bg-blue-900 py-2 text-center rounded">Top Selling Products</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6" id="top-selling-products">
+                <!-- Similar placeholder product items -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="my-12">
+        <div class="container mx-auto">
+            <h2 class="text-3xl text-white bg-blue-900 py-2 text-center rounded">Categories</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6" id="categories-list">
+                <!-- Example categories items -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Highlights Section -->
+    <section id="highlights" class="my-12">
+        <div class="container mx-auto">
+            <h2 class="text-3xl text-white bg-blue-900 py-2 text-center rounded">Platform Highlights</h2>
+            <ul class="list-disc list-inside mt-6 text-lg">
+                <li>🌟 24/7 Customer Support</li>
+                <li>🚚 Fast Shipping</li>
+                <li>💸 Exclusive Discounts</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-4 text-center mt-8">
+        <p>&copy; 2024 Our Store. All rights reserved.</p>
+        <div class="mt-2">
+            <a href="/contact.html" class="text-white hover:text-orange-500 mx-2">Contact Us</a> | 
+            <a href="/faqs.html" class="text-white hover:text-orange-500 mx-2">FAQs</a> | 
+            <a href="/about.html" class="text-white hover:text-orange-500 mx-2">About Us</a>
+        </div>
+    </footer>
+
+</body>
+</html>

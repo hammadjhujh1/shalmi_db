@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF;
+            color: #003366;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #003366;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-size: 16px;
+            color: #003366;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 96%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 120px;
+            resize: none;
+        }
+
+        /* Submit button styling */
+        .btn-submit {
+            background-color: #E83737;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            background-color: #cc2f2f;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .contact-info p {
+            font-size: 14px;
+            color: #777;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Contact Us</h1>
+
+    <div class="contact-form">
+        <form action="#" method="POST">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" placeholder="Your name..." required>
+
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" placeholder="Your email..." required>
+
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" placeholder="Write your message..." required></textarea>
+
+            <button type="submit" class="btn-submit">Submit</button>
+        </form>
+    </div>
+
+    <div class="contact-info">
+        <p>If you need immediate assistance, please email us at <strong>support@shalmi-online.com</strong> or call us at <strong>+92-300-1234567</strong>.</p>
+    </div>
+
+</body>
+</html>

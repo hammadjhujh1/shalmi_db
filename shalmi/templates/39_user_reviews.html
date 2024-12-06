@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Reviews</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF;
+            color: #003366;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #003366;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .reviews-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 24px;
+            color: #003366;
+            margin-bottom: 10px;
+        }
+
+        .review {
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .review h3 {
+            font-size: 18px;
+            color: #003366;
+            margin-bottom: 5px;
+        }
+
+        .review p {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .review .rating {
+            font-size: 16px;
+            color: #E83737;
+            margin-bottom: 10px;
+        }
+
+        .btn-submit {
+            background-color: #E83737;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            background-color: #cc2f2f;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            color: #003366;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: none;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>User Reviews</h1>
+
+    <div class="reviews-container">
+        <div class="section">
+            <h2>Customer Reviews</h2>
+
+            <!-- Example Review 1 -->
+            <div class="review">
+                <h3>John Doe</h3>
+                <div class="rating">Rating: ★★★★☆</div>
+                <p>The product quality was good and it arrived on time. I would recommend it to others.</p>
+            </div>
+
+            <!-- Example Review 2 -->
+            <div class="review">
+                <h3>Jane Smith</h3>
+                <div class="rating">Rating: ★★★☆☆</div>
+                <p>Overall, it was a decent product, but the packaging could have been better.</p>
+            </div>
+
+            <!-- Example Review 3 -->
+            <div class="review">
+                <h3>Sam Wilson</h3>
+                <div class="rating">Rating: ★★★★★</div>
+                <p>Amazing experience! The product exceeded my expectations. I will definitely buy again.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Leave a Review</h2>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="rating">Rating (1 to 5):</label>
+                    <input type="number" id="rating" name="rating" min="1" max="5" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="review">Review:</label>
+                    <textarea id="review" name="review" required></textarea>
+                </div>
+
+                <a href="#" class="btn-submit">Submit Review</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

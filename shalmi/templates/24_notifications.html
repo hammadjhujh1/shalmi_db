@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF;
+            color: #003366;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #003366;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .notifications-section {
+            margin-top: 30px;
+        }
+
+        .notification {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification h3 {
+            color: #003366;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .notification p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .notification-time {
+            font-size: 14px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        /* Button styling */
+        .btn-clear {
+            display: inline-block;
+            background-color: #E83737;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .btn-clear:hover {
+            background-color: #cc2f2f;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Notifications</h1>
+
+    <div class="notifications-section">
+
+        <!-- Notification 1 -->
+        <div class="notification">
+            <h3>Order Shipped</h3>
+            <p>Your order #12345 has been shipped and is on its way. Expected delivery: 2-3 business days.</p>
+            <p class="notification-time">Received: 1 hour ago</p>
+        </div>
+
+        <!-- Notification 2 -->
+        <div class="notification">
+            <h3>New Promotion</h3>
+            <p>Enjoy 20% off on all items for the next 48 hours! Don't miss out on this limited-time offer.</p>
+            <p class="notification-time">Received: 5 hours ago</p>
+        </div>
+
+        <!-- Notification 3 -->
+        <div class="notification">
+            <h3>Message from Support</h3>
+            <p>Your recent inquiry has been addressed. Please check your email for further details.</p>
+            <p class="notification-time">Received: Yesterday</p>
+        </div>
+
+    </div>
+
+    <!-- Button to clear all notifications -->
+    <a href="#" class="btn-clear">Clear All Notifications</a>
+
+</body>
+</html>

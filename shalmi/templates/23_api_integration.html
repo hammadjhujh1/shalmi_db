@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Integration</title>
+    <style>
+        /* General styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF;
+            color: #003366;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #003366;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #003366;
+            font-size: 22px;
+            margin-top: 20px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* API documentation section */
+        .api-section {
+            margin-top: 30px;
+        }
+
+        .api-endpoint {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .api-endpoint h3 {
+            color: #003366;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .api-endpoint pre {
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-left: 5px solid #003366;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+
+        .api-endpoint code {
+            font-family: Consolas, monospace;
+            color: #E83737;
+        }
+
+        /* Button styling */
+        .btn-download {
+            display: inline-block;
+            background-color: #E83737;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .btn-download:hover {
+            background-color: #cc2f2f;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>API Integration</h1>
+
+    <h2>Introduction</h2>
+    <p>
+        Welcome to the API Integration page. Here you can find all the necessary documentation and endpoints
+        to integrate with our platform. These APIs will allow you to access various features of our system,
+        such as product management, order tracking, and user data retrieval.
+    </p>
+
+    <h2>API Documentation</h2>
+
+    <!-- API Endpoint 1 -->
+    <div class="api-section">
+        <div class="api-endpoint">
+            <h3>GET /api/products</h3>
+            <p>
+                Fetches a list of all available products in the system.
+            </p>
+            <pre><code>GET https://api.shalmionline.com/v1/products</code></pre>
+        </div>
+
+        <!-- API Endpoint 2 -->
+        <div class="api-endpoint">
+            <h3>POST /api/orders</h3>
+            <p>
+                Creates a new order in the system with product details and user information.
+            </p>
+            <pre><code>POST https://api.shalmionline.com/v1/orders</code></pre>
+        </div>
+
+        <!-- API Endpoint 3 -->
+        <div class="api-endpoint">
+            <h3>GET /api/users/{user_id}</h3>
+            <p>
+                Retrieves information about a specific user by their ID.
+            </p>
+            <pre><code>GET https://api.shalmionline.com/v1/users/{user_id}</code></pre>
+        </div>
+    </div>
+
+    <!-- Button to download full API documentation -->
+    <a href="#" class="btn-download">Download Full API Documentation</a>
+
+</body>
+</html>

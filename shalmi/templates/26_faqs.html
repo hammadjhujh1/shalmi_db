@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF;
+            color: #003366;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #003366;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+        }
+
+        .faq-question {
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #003366;
+            color: #ffffff;
+            border-radius: 5px;
+        }
+
+        .faq-answer {
+            display: none;
+            font-size: 16px;
+            padding: 10px;
+            background-color: #e9e9e9;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .faq-question:hover {
+            background-color: #002244;
+        }
+
+        .btn-more {
+            display: block;
+            background-color: #E83737;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .btn-more:hover {
+            background-color: #cc2f2f;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Frequently Asked Questions</h1>
+
+    <div class="faq-container">
+
+        <div class="faq-item">
+            <div class="faq-question">What is Shalmi Online?</div>
+            <div class="faq-answer">Shalmi Online is a platform where buyers and sellers connect to exchange a variety of products. We provide secure and reliable e-commerce solutions.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">How do I place an order?</div>
+            <div class="faq-answer">You can place an order by browsing products, adding items to your cart, and checking out through our secure payment system.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">What payment methods do you accept?</div>
+            <div class="faq-answer">We accept all major credit and debit cards, as well as popular digital wallets like PayPal and Stripe.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">How can I track my order?</div>
+            <div class="faq-answer">Once your order has been shipped, you will receive an email with a tracking number. You can use this number to track your order on our website.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">What is your return policy?</div>
+            <div class="faq-answer">We offer a 30-day return policy on all items. Please contact our customer service for assistance with returns.</div>
+        </div>
+
+        <!-- Additional FAQs can be added here -->
+
+    </div>
+
+    <a href="#" class="btn-more">View More FAQs</a>
+
+    <script>
+        // FAQ Toggle Functionality
+        document.querySelectorAll('.faq-question').forEach(item => {
+            item.addEventListener('click', () => {
+                const answer = item.nextElementSibling;
+                answer.style.display = (answer.style.display === 'block') ? 'none' : 'block';
+            });
+        });
+    </script>
+
+</body>
+</html>

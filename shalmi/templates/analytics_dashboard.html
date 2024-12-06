@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF; /* White background */
+            color: #003366; /* Dark blue text */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #E83737; /* Brick red border */
+            border-radius: 5px;
+            background-color: #F9F9F9; /* Light gray background for the container */
+        }
+
+        h1 {
+            text-align: center;
+            color: #E83737; /* Brick red heading */
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border: 1px solid #003366; /* Dark blue border */
+            margin: 10px 0;
+            border-radius: 4px;
+            background-color: #FFFFFF; /* White background for metrics */
+        }
+
+        .metric h2 {
+            margin: 0;
+        }
+
+        .chart {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #003366; /* Dark blue border */
+            border-radius: 4px;
+            background-color: #FFFFFF; /* White background for chart area */
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Analytics Dashboard</h1>
+        
+        <div class="metric">
+            <div>
+                <h2>Total Sales</h2>
+                <p>PKR 500,000</p>
+            </div>
+            <div>
+                <h2>Total Inventory</h2>
+                <p>150 Products</p>
+            </div>
+            <div>
+                <h2>New Orders</h2>
+                <p>25</p>
+            </div>
+        </div>
+
+        <div class="chart">
+            <h2>Sales Trend Over Time</h2>
+            <!-- Placeholder for chart (e.g., using Chart.js or another library) -->
+            <canvas id="salesTrendChart" width="400" height="200"></canvas>
+        </div>
+
+        <div class="chart">
+            <h2>Inventory Levels</h2>
+            <!-- Placeholder for chart -->
+            <canvas id="inventoryChart" width="400" height="200"></canvas>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // Placeholder for chart data initialization
+        const ctx1 = document.getElementById('salesTrendChart').getContext('2d');
+        const salesTrendChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Sales',
+                    data: [100000, 150000, 200000, 180000, 220000, 250000],
+                    backgroundColor: 'rgba(232, 55, 55, 0.2)', // Light brick red
+                    borderColor: 'rgba(232, 55, 55, 1)', // Dark brick red
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const ctx2 = document.getElementById('inventoryChart').getContext('2d');
+        const inventoryChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Product A', 'Product B', 'Product C'],
+                datasets: [{
+                    label: 'Inventory Levels',
+                    data: [50, 30, 70],
+                    backgroundColor: 'rgba(0, 51, 102, 0.2)', // Light dark blue
+                    borderColor: 'rgba(0, 51, 102, 1)', // Dark blue
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

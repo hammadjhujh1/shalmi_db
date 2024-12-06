@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shalmi Online - Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#003366',
+                        secondary: '#8B0000',
+                        white: '#ffffff',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white text-primary min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-primary text-white py-4 px-6 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="/placeholder.svg?height=40&width=40" alt="Shalmi Online Logo" class="h-10 w-10 mr-2">
+                <h1 class="text-2xl font-bold">Shalmi Online</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <select class="bg-white text-primary border border-white rounded px-2 py-1 text-sm">
+                    <option>English</option>
+                    <option>Urdu</option>
+                </select>
+                <a href="#" class="text-sm hover:underline">Help</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <!-- Main Content -->
+    <main class="container mx-auto mt-12 px-4 flex-grow">
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg overflow-hidden border border-primary">
+            <div class="bg-primary p-4 text-white text-center">
+                <h2 class="text-2xl font-semibold">Create Your Account</h2>
+                <p class="text-sm mt-1">Join Shalmi Online today</p>
+            </div>
+            <form id="signup-form" method="POST" action="{% url 'signup' %}" class="p-6 space-y-6">
+                {% csrf_token %}
+                <div>
+                    <label for="email" class="block text-primary font-medium mb-2">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required 
+                        class="w-full px-4 py-3 rounded-lg border border-primary focus:outline-none focus:ring-2 focus:ring-secondary transition">
+                </div>
+                <div>
+                    <label for="password" class="block text-primary font-medium mb-2">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required 
+                        class="w-full px-4 py-3 rounded-lg border border-primary focus:outline-none focus:ring-2 focus:ring-secondary transition">
+                </div>
+                <div>
+                    <label for="trade-role" class="block text-primary font-medium mb-2">Please select trade role</label>
+                    <select id="trade-role" name="trade-role" required
+                        class="w-full px-4 py-3 rounded-lg border border-primary focus:outline-none focus:ring-2 focus:ring-secondary transition">
+                        <option value="">Select your Trade Role</option>
+                        <option value="SPB">Retail Buyer (1-2 products)</option>
+                        <option value="WSB">Wholesale Buyer (Bulk purchases)</option>
+                        <option value="SLR">Seller</option>
+                        <option value="both">Both (Wholesale Buyer & Seller)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="flex items-start">
+                        <input type="checkbox" required class="form-checkbox text-secondary mt-1 mr-2">
+                        <span class="text-sm text-primary">
+                            I agree to the Terms of Use and Privacy Policy. 
+                            I agree to receive information from Shalmi Online about its products and services.
+                        </span>
+                    </label>
+                </div>
+                <button type="submit" 
+                    class="w-full bg-secondary text-white py-3 rounded-lg hover:bg-primary transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-50">
+                    Create Account
+                </button>
+            </form>
+        </div>
+        
+        <!-- Login Option -->
+        <div class="mt-8 text-center">
+            <p class="text-primary">Already have an account?</p>
+            <a href="{% url 'login' %}" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-full hover:bg-secondary transition">
+                Log In
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-primary text-white mt-16 py-8">
+        <div class="container mx-auto px-4">
+            <!-- Footer content as before -->
+        </div>
+    </footer>
+</body>
+</html>

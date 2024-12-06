@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF; /* White background */
+            color: #003366; /* Dark blue text */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #E83737; /* Brick red border */
+            border-radius: 5px;
+            background-color: #F9F9F9; /* Light gray background for the container */
+        }
+
+        h1 {
+            text-align: center;
+            color: #E83737; /* Brick red heading */
+        }
+
+        .inventory-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border: 1px solid #003366; /* Dark blue border */
+            margin: 10px 0;
+            border-radius: 4px;
+            background-color: #FFFFFF; /* White background for inventory items */
+        }
+
+        .inventory-item h2 {
+            margin: 0;
+        }
+
+        .low-stock-alert {
+            color: #E83737; /* Brick red for alerts */
+            font-weight: bold;
+        }
+
+        .update-stock {
+            display: flex;
+            align-items: center;
+        }
+
+        .update-stock input {
+            width: 60px;
+            margin-right: 10px;
+            padding: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Inventory Management</h1>
+        
+        <div class="inventory-item">
+            <div>
+                <h2>Product A</h2>
+                <p>Current Stock: <span>50</span></p>
+                <p class="low-stock-alert">Low Stock Alert: <span>10 left!</span></p>
+            </div>
+            <div class="update-stock">
+                <input type="number" placeholder="Update" />
+                <button>Update</button>
+            </div>
+        </div>
+
+        <div class="inventory-item">
+            <div>
+                <h2>Product B</h2>
+                <p>Current Stock: <span>30</span></p>
+                <p class="low-stock-alert">Low Stock Alert: <span>5 left!</span></p>
+            </div>
+            <div class="update-stock">
+                <input type="number" placeholder="Update" />
+                <button>Update</button>
+            </div>
+        </div>
+
+        <div class="inventory-item">
+            <div>
+                <h2>Product C</h2>
+                <p>Current Stock: <span>70</span></p>
+                <p>No Low Stock Alerts</p>
+            </div>
+            <div class="update-stock">
+                <input type="number" placeholder="Update" />
+                <button>Update</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

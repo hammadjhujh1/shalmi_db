@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF; /* White background */
+            color: #003366; /* Dark blue text */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #E83737; /* Brick red border */
+            border-radius: 5px;
+            background-color: #F9F9F9; /* Light gray background for the container */
+        }
+
+        h1 {
+            text-align: center;
+            color: #E83737; /* Brick red heading */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #003366; /* Dark blue border */
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #E83737; /* Brick red button */
+            color: #FFFFFF; /* White text */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #C82828; /* Darker red on hover */
+        }
+
+        #payment-status {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Payment Gateway</h1>
+        <form id="payment-form">
+            <div class="form-group">
+                <label for="card-number">Card Number:</label>
+                <input type="text" id="card-number" required>
+            </div>
+            <div class="form-group">
+                <label for="expiry-date">Expiry Date (MM/YY):</label>
+                <input type="text" id="expiry-date" required>
+            </div>
+            <div class="form-group">
+                <label for="cvc">CVC:</label>
+                <input type="text" id="cvc" required>
+            </div>
+            <div class="form-group">
+                <label for="billing-address">Billing Address:</label>
+                <input type="text" id="billing-address" required>
+            </div>
+            <button type="submit">Pay Now</button>
+        </form>
+        <div id="payment-status"></div>
+    </div>
+
+    <script>
+        document.getElementById('payment-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Simulate sending payment details to the payment processor
+            const cardNumber = document.getElementById('card-number').value;
+            const expiryDate = document.getElementById('expiry-date').value;
+            const cvc = document.getElementById('cvc').value;
+            const billingAddress = document.getElementById('billing-address').value;
+
+            // Here you would typically send the payment information to a backend service
+            // For demonstration, we'll just simulate a successful payment response
+            setTimeout(() => {
+                document.getElementById('payment-status').innerText = 'Payment Successful! Thank you for your purchase.';
+                document.getElementById('payment-form').reset(); // Reset form fields
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

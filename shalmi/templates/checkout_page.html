@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9; /* Light gray background */
+            color: #333; /* Dark gray text */
+        }
+
+        header {
+            background: #003366; /* Dark blue background for header */
+            color: #ffffff; /* White text */
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff; /* White background for checkout */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #003366; /* Dark blue */
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+
+        .total {
+            font-size: 1.5em;
+            color: #E83737; /* Reddish color for total */
+            margin-top: 20px;
+        }
+
+        .shipping-options, .payment-info {
+            margin-top: 30px;
+        }
+
+        .checkout-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #E83737; /* Reddish color for button */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .checkout-button:hover {
+            background-color: #d72f2f; /* Darker red on hover */
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666; /* Darker gray for footer text */
+        }
+
+        .payment-method {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Checkout</h1>
+    </header>
+
+    <div class="container">
+        <h2>Your Cart</h2>
+        <div id="cart-items">
+            <!-- Cart items will be dynamically inserted here -->
+        </div>
+
+        <div class="total" id="total-amount">Total: ₨ 0.00</div>
+
+        <div class="shipping-options">
+            <h3>Shipping Options</h3>
+            <select id="shipping-select">
+                <option value="standard">Standard Shipping (₨ 50)</option>
+                <option value="express">Express Shipping (₨ 100)</option>
+            </select>
+        </div>
+
+        <div class="payment-info">
+            <h3>Payment Information</h3>
+            <div class="payment-method">
+                <label>
+                    <input type="radio" name="payment" value="credit-card" checked> Credit/Debit Card
+                </label><br>
+                <label>
+                    <input type="radio" name="payment" value="paypal"> PayPal
+                </label><br>
+                <label>
+                    <input type="radio" name="payment" value="bank-transfer"> Bank Transfer
+                </label>
+            </div>
+            <div id="card-details">
+                <input type="text" placeholder="Card Number" id="card-number" required>
+                <input type="text" placeholder="Expiry Date (MM/YY)" id="expiry-date" required>
+                <input type="text" placeholder="CVV" id="cvv" required>
+            </div>
+            <div id="paypal-details" style="display: none;">
+                <input type="email" placeholder="PayPal Email" id="paypal-email" required>
+            </div>
+            <div id="bank-transfer-details" style="display: none;">
+                <input type="text" placeholder="Account Number" id="account-number" required>
+            </div>
+        </div>
+
+        <button class="checkout-button" onclick="processCheckout()">Complete Purchase</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 My Store. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Example cart data - in practice, this would come from a backend or user session
+        const cartItems = [
+            { name: 'Sample Product 1', price: 200, quantity: 1 },
+            { name: 'Sample Product 2', price: 300, quantity: 2 }
+        ];
+
+        function updateCart() {
+            const cartContainer = document.getElementById('cart-items');
+            cartContainer.innerHTML = ''; // Clear previous items
+
+            let total = 0;
+            cartItems.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                const cartItemDiv = document.createElement('div');
+                cartItemDiv.className = 'cart-item';
+                cartItemDiv.innerHTML = `
+                    <span>${item.name} (x${item.quantity})</span>
+                    <span>₨ ${itemTotal}</span>
+                `;
+                cartContainer.appendChild(cartItemDiv);
+            });
+
+            document.getElementById('total-amount').textContent = `Total: ₨ ${total}`;
+        }
+
+        function processCheckout() {
+            const selectedPaymentMethod = document.querySelector('input[name="payment"]:checked').value;
+            const cardNumber = document.getElementById('card-number').value;
+            const expiryDate = document.getElementById('expiry-date').value;
+            const cvv = document.getElementById('cvv').value;
+            const paypalEmail = document.getElementById('paypal-email').value;
+            const accountNumber = document.getElementById('account-number').value;
+
+            // Basic validation (expand with proper validation in a real application)
+            if (selectedPaymentMethod === 'credit-card' && cardNumber && expiryDate && cvv) {
+                alert('Processing your order with Credit/Debit Card...');
+            } else if (selectedPaymentMethod === 'paypal' && paypalEmail) {
+                alert('Processing your order with PayPal...');
+            } else if (selectedPaymentMethod === 'bank-transfer' && accountNumber) {
+                alert('Processing your order with Bank Transfer...');
+            } else {
+                alert('Please fill in all payment details.');
+            }
+        }
+
+        // Update cart display on page load
+        window.onload = updateCart;
+
+        // Payment method selection logic
+        document.querySelectorAll('input[name="payment"]').forEach((elem) => {
+            elem.addEventListener("change", function(event) {
+                document.getElementById('card-details').style.display = 'none';
+                document.getElementById('paypal-details').style.display = 'none';
+                document.getElementById('bank-transfer-details').style.display = 'none';
+
+                if (event.target.value === 'credit-card') {
+                    document.getElementById('card-details').style.display = 'block';
+                } else if (event.target.value === 'paypal') {
+                    document.getElementById('paypal-details').style.display = 'block';
+                } else if (event.target.value === 'bank-transfer') {
+                    document.getElementById('bank-transfer-details').style.display = 'block';
+                }
+            });
+        });
+
+        // Trigger change event on page load to set default visibility
+        document.querySelector('input[name="payment"]:checked').dispatchEvent(new Event('change'));
+    </script>
+</body>
+</html>

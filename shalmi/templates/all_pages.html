@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Pages</title>
+    <style>
+        /* Basic styling for the page and button layout */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        /* Grid container for buttons */
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Button styling */
+        .button {
+            display: block;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        /* Responsive layout for smaller screens */
+        @media (max-width: 768px) {
+            .button-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .button-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>All Pages</h1>
+
+<div class="button-container">
+    <a href="{% url 'home_page' %}" class="button">Home Page</a>
+    <a href="{% url 'admin_dashboard' %}" class="button">Admin Dashboard</a>
+    <a href="{% url 'buyer_dashboard' %}" class="button">Buyer Dashboard</a>
+    <a href="{% url 'analytics_dashboard' %}" class="button">Analytics Dashboard</a>
+    <a href="{% url 'seller_analytics' %}" class="button">Seller Analytics</a>
+    <a href="{% url 'api_integration' %}" class="button">API Integration</a>
+    <a href="{% url 'notifications' %}" class="button">Notifications</a>
+    <a href="{% url 'contact_us' %}" class="button">Contact Us</a>
+    <a href="{% url 'faqs' %}" class="button">FAQs</a>
+    <a href="{% url 'about_us' %}" class="button">About Us</a>
+    <a href="{% url 'privacy_policy' %}" class="button">Privacy Policy</a>
+    <a href="{% url 'terms_conditions' %}" class="button">Terms and Conditions</a>
+    <a href="{% url 'refund_policy' %}" class="button">Refund Policy</a>
+    <a href="{% url 'shipping_policy' %}" class="button">Shipping Policy</a>
+    <a href="{% url 'help_centre' %}" class="button">Help Centre</a>
+    <a href="{% url 'live_chat_support' %}" class="button">Live Chat Support</a>
+    <a href="{% url 'discussion_forum' %}" class="button">Discussion Forum</a>
+    <a href="{% url 'partner_institutions' %}" class="button">Partner Institutions</a>
+    <a href="{% url 'landing_promotions' %}" class="button">Landing Promotions</a>
+    <a href="{% url 'loyalty_program' %}" class="button">Loyalty Program</a>
+    <a href="{% url 'premium_subscription' %}" class="button">Premium Subscription</a>
+    <a href="{% url 'user_reviews' %}" class="button">User Reviews</a>
+    <a href="{% url 'affiliate_program' %}" class="button">Affiliate Program</a>
+    <a href="{% url 'blog' %}" class="button">Blog</a>
+    <a href="{% url 'careers' %}" class="button">Careers</a>
+    <a href="{% url 'payment_gateway' %}" class="button">Payment Gateway</a>
+    <a href="{% url 'checkout_page' %}" class="button">Checkout Page</a>
+    <a href="{% url 'inventory_management' %}" class="button">Inventory Management</a>
+    <a href="{% url 'login' %}" class="button">Login Page</a>
+    <a href="{% url 'order_configuration' %}" class="button">Order Configuration</a>
+    <a href="{% url 'order_tracking' %}" class="button">Order Tracking</a>
+    <a href="{% url 'product_management' %}" class="button">Product Management</a>
+    <a href="{% url 'products_details' %}" class="button">Product Details Page</a>
+    <a href="{% url 'profile_page' %}" class="button">Profile Page</a>
+    <a href="{% url 'request_product_sample' %}" class="button">Request Product Sample</a>
+    <a href="{% url 'search_result_page' %}" class="button">Search Result Page</a>
+    <a href="{% url 'seller_dashboard' %}" class="button">Seller Dashboard</a>
+    <a href="{% url 'setting_page' %}" class="button">Settings Page</a>
+    <a href="{% url 'signup' %}" class="button">Sign Up Page</a>
+    <a href="{% url 'trending_top_selling_products' %}" class="button">Trending & Top Selling Products</a>
+    <a href="{% url 'upload_product' %}" class="button">Upload Product</a>
+    <a href="{% url 'users_management' %}" class="button">Users Management</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loyalty Program</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF;
+            color: #003366;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #003366;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .loyalty-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 24px;
+            color: #003366;
+            margin-bottom: 10px;
+        }
+
+        .section p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .loyalty-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .loyalty-list li {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reward-title {
+            font-size: 18px;
+            color: #003366;
+            margin-bottom: 5px;
+        }
+
+        .reward-points {
+            background-color: #E83737;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .btn-back {
+            display: block;
+            background-color: #E83737;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 20px;
+            width: 150px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-back:hover {
+            background-color: #cc2f2f;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Your Loyalty Program</h1>
+
+    <div class="loyalty-container">
+        <div class="section">
+            <h2>Welcome to Our Loyalty Program!</h2>
+            <p>Earn points with every purchase and redeem them for exciting rewards. Below is an overview of your current points and available rewards.</p>
+        </div>
+
+        <ul class="loyalty-list">
+            <li>
+                <div class="reward-title">Total Points Earned</div>
+                <div class="reward-points">1500 Points</div>
+            </li>
+            <li>
+                <div class="reward-title">Next Reward: $10 Discount</div>
+                <div class="reward-points">2000 Points Needed</div>
+            </li>
+            <li>
+                <div class="reward-title">Free Shipping Reward</div>
+                <div class="reward-points">Redeemed</div>
+            </li>
+        </ul>
+
+        <a href="index.html" class="btn-back">Back to Home</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History</title>
+    <style>
+        /* General styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF;
+            color: #003366;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #003366;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #003366;
+            margin-top: 20px;
+            font-size: 22px;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #003366;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Button styling */
+        .view-details-btn {
+            background-color: #E83737;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .view-details-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Order History</h1>
+
+    <h2>Past Purchases</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>#00123</td>
+                <td>2024-09-15</td>
+                <td>PKR 4500</td>
+                <td>Delivered</td>
+                <td><button class="view-details-btn">View Details</button></td>
+            </tr>
+            <tr>
+                <td>#00122</td>
+                <td>2024-09-10</td>
+                <td>PKR 3000</td>
+                <td>Cancelled</td>
+                <td><button class="view-details-btn">View Details</button></td>
+            </tr>
+            <tr>
+                <td>#00121</td>
+                <td>2024-09-05</td>
+                <td>PKR 7500</td>
+                <td>Shipped</td>
+                <td><button class="view-details-btn">View Details</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9; /* Light gray background */
+            color: #333; /* Dark gray text */
+        }
+
+        header {
+            background: #003366; /* Dark blue background for header */
+            color: #ffffff; /* White text */
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff; /* White background for profile */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #E83737; /* Reddish color for profile */
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #E83737; /* Reddish color for button */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        button:hover {
+            background-color: #c32f2f; /* Darker red on hover */
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666; /* Darker gray for footer text */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>User Profile</h1>
+    </header>
+
+    <div class="container">
+        <h2>Edit Your Profile</h2>
+        <form id="profile-form">
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password">
+            </div>
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select id="role" name="role" required>
+                    <option value="buyer">Buyer</option>
+                    <option value="seller">Seller</option>
+                </select>
+            </div>
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 My Store. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Example data for the profile
+        const userProfile = {
+            fullName: 'John Doe',
+            email: 'john@example.com',
+            role: 'buyer'
+        };
+
+        // Function to populate the form with existing user data
+        function populateProfile() {
+            document.getElementById('fullName').value = userProfile.fullName;
+            document.getElementById('email').value = userProfile.email;
+            document.getElementById('role').value = userProfile.role;
+        }
+
+        // Handle form submission
+        document.getElementById('profile-form').onsubmit = function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const updatedProfile = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value
+            };
+            // Save updated profile data (this would normally involve a backend call)
+            console.log('Profile updated:', updatedProfile);
+            alert('Profile updated successfully!');
+        };
+
+        // Populate the profile on page load
+        window.onload = populateProfile;
+    </script>
+</body>
+</html>

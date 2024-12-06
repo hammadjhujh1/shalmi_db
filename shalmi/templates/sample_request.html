@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Request - Shalmi Online</title>
+    <link rel="stylesheet" href="sample_request.css">
+</head>
+<body>
+    <div class="sample-container">
+        <h1>Request Product Sample - Shalmi Online</h1>
+
+        <form action="/request-sample" method="POST" class="sample-form">
+            <div class="input-group">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="product-name">Product Name</label>
+                <input type="text" id="product-name" name="product_name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="message">Message (Optional)</label>
+                <textarea id="message" name="message" rows="4" placeholder="Any specific requests?"></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Request Sample</button>
+
+            <p class="info-text">Please allow 5-7 business days for your sample request to be processed.</p>
+        </form>
+    </div>
+</body>
+</html>
