@@ -11,9 +11,9 @@ from .serializers import (
     SubCategorySerializer, SubCategoryCreateSerializer,
     ProductSerializer, ProductCreateSerializer,
     ShippingAddressSerializer, ShipmentTrackingSerializer,
-    OrderSerializer
+    OrderSerializer, UserSerializer, UserCreateSerializer, UserUpdateSerializer
 )
-from .permissions import IsAdminManagerOrReadOnly
+from .permissions import IsAdminManagerOrReadOnly, IsAdminUser
 import json
 from django.utils import timezone
 from rest_framework.decorators import action
@@ -21,6 +21,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count
 
 def signup(request):
     if request.method == 'POST':
@@ -170,15 +171,33 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
         return SubCategorySerializer
 
 # New NewArrivalsViewSet
-class NewArrivalsViewSet(viewsets.ViewSet):
-    """API endpoint that returns products where is_new_arrival is True"""
+class NewArrivalsViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint that returns new arrival products"""
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
 
-    def list(self, request):
-        new_arrival_labels = ProductLabel.objects.filter(is_new_arrival=True)
-        products = [label.products.all() for label in new_arrival_labels]
-        products = [product for sublist in products for product in sublist]
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        # Base queryset with default ordering by created_at
+        queryset = Product.objects.filter(
+            labels__is_new_arrival=True,
+            is_deleted=False,
+            status='published'
+        ).distinct().order_by('-created_at')
+
+        # Get sort parameter from request
+        sort_by = self.request.query_params.get('sort')
+        
+        # Only apply different sorting if explicitly requested
+        if sort_by == 'most_sold':
+            queryset = queryset.annotate(
+                total_sold=Count('orderitem')
+            ).order_by('-total_sold')
+        elif sort_by == 'price':
+            queryset = queryset.order_by('price')
+        elif sort_by == 'newest':
+            queryset = queryset.order_by('-created_at')
+        
+        return queryset
 
 
 
@@ -375,3 +394,71 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.status = 'cancelled'
         order.save()
         return Response({'status': 'order cancelled'})
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for user management
+    Provides CRUD operations: Create, Read, Update, Delete
+    """
+    queryset = CustomUser.objects.all()
+    permission_classes = [IsAdminUser]
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return UserCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return UserUpdateSerializer
+        return UserSerializer
+
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action == 'create':
+            permission_classes = [permissions.AllowAny]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+    def get_queryset(self):
+        """
+        Filter queryset based on user role:
+        - Admin/Manager can see all users
+        - Regular users can only see their own profile
+        """
+        user = self.request.user
+        if user.role in [CustomUser.ADMIN, CustomUser.MANAGER]:
+            return CustomUser.objects.all()
+        return CustomUser.objects.filter(id=user.id)
+
+    @action(detail=False, methods=['get'])
+    def me(self, request):
+        """
+        Get current user's profile
+        """
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['put', 'patch'])
+    def update_profile(self, request):
+        """
+        Update current user's profile
+        """
+        user = request.user
+        serializer = UserUpdateSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Soft delete user account
+        """
+        user = self.get_object()
+        user.is_active = False
+        user.save()
+        return Response({"detail": "User account has been deactivated."}, 
+                      status=status.HTTP_204_NO_CONTENT)

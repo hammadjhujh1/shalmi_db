@@ -3,7 +3,7 @@ from . import views
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .views import ProductViewSet, CategoryViewSet, SubCategoryViewSet, OrderViewSet, ShippingAddressViewSet, ShipmentTrackingViewSet, NewArrivalsViewSet
+from .views import ProductViewSet, CategoryViewSet, SubCategoryViewSet, OrderViewSet, ShippingAddressViewSet, ShipmentTrackingViewSet, NewArrivalsViewSet, UserViewSet
 
 # Initialize the router and register the viewsets
 router = DefaultRouter()
@@ -14,6 +14,7 @@ router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'shipping-addresses', ShippingAddressViewSet, basename='shipping-address')
 router.register(r'shipments', ShipmentTrackingViewSet, basename='shipment')
 router.register(r'new-arrivals', NewArrivalsViewSet, basename='new-arrivals')
+router.register(r'users', UserViewSet, basename='user')
 
 
 urlpatterns = [
