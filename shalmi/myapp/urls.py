@@ -3,7 +3,7 @@ from . import views
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .views import ProductViewSet, CategoryViewSet, SubCategoryViewSet, OrderViewSet, ShippingAddressViewSet, ShipmentTrackingViewSet, NewArrivalsViewSet, UserViewSet
+from .views import ProductViewSet, CategoryViewSet, SubCategoryViewSet, OrderViewSet, ShippingAddressViewSet, ShipmentTrackingViewSet, NewArrivalsViewSet, UserViewSet, TrendingProductsViewSet, WholesaleProductsViewSet, FeaturedProductsViewSet, DiscountedProductsViewSet, TopSellingProductsViewSet
 
 # Initialize the router and register the viewsets
 router = DefaultRouter()
@@ -15,6 +15,11 @@ router.register(r'shipping-addresses', ShippingAddressViewSet, basename='shippin
 router.register(r'shipments', ShipmentTrackingViewSet, basename='shipment')
 router.register(r'new-arrivals', NewArrivalsViewSet, basename='new-arrivals')
 router.register(r'users', UserViewSet, basename='user')
+router.register(r'trending', TrendingProductsViewSet, basename='trending')
+router.register(r'wholesale', WholesaleProductsViewSet, basename='wholesale')
+router.register(r'featured', FeaturedProductsViewSet, basename='featured')
+router.register(r'discounted', DiscountedProductsViewSet, basename='discounted')
+router.register(r'top-selling', TopSellingProductsViewSet, basename='top-selling')
 
 
 urlpatterns = [

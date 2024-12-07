@@ -11,7 +11,7 @@ from .serializers import (
     SubCategorySerializer, SubCategoryCreateSerializer,
     ProductSerializer, ProductCreateSerializer,
     ShippingAddressSerializer, ShipmentTrackingSerializer,
-    OrderSerializer, UserSerializer, UserCreateSerializer, UserUpdateSerializer
+    OrderSerializer, UserSerializer, UserCreateSerializer, UserUpdateSerializer, ProductLabelSerializer
 )
 from .permissions import IsAdminManagerOrReadOnly, IsAdminUser
 import json
@@ -126,6 +126,27 @@ class ProductViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=['patch'])
+    def update_labels(self, request, pk=None):
+        """Update product labels"""
+        product = self.get_object()
+        label = product.labels.first()  # Assuming one label per product
+        
+        if not label:
+            return Response(
+                {"error": "No label found for this product"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Update label fields from request data
+        for field in ['is_new_arrival', 'is_trending', 'is_featured', 
+                     'is_wholesale', 'is_discounted', 'is_top_selling']:
+            if field in request.data:
+                setattr(label, field, request.data[field])
+        
+        label.save()
+        return Response(ProductSerializer(product).data)
+
 # Category ViewSet
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminManagerOrReadOnly]
@@ -199,7 +220,65 @@ class NewArrivalsViewSet(viewsets.ReadOnlyModelViewSet):
         
         return queryset
 
+class TrendingProductsViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint that returns trending products"""
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
 
+    def get_queryset(self):
+        return Product.objects.filter(
+            labels__is_trending=True,
+            is_deleted=False,
+            status='published'
+        ).distinct().order_by('-created_at')
+
+class WholesaleProductsViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint that returns wholesale products"""
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return Product.objects.filter(
+            labels__is_wholesale=True,
+            is_deleted=False,
+            status='published'
+        ).distinct().order_by('-created_at')
+
+class FeaturedProductsViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint that returns featured products"""
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return Product.objects.filter(
+            labels__is_featured=True,
+            is_deleted=False,
+            status='published'
+        ).distinct().order_by('-created_at')
+
+class DiscountedProductsViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint that returns discounted products"""
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return Product.objects.filter(
+            labels__is_discounted=True,
+            is_deleted=False,
+            status='published'
+        ).distinct().order_by('-created_at')
+
+class TopSellingProductsViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint that returns top selling products"""
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return Product.objects.filter(
+            labels__is_top_selling=True,
+            is_deleted=False,
+            status='published'
+        ).distinct().order_by('-created_at')
 
 def home_page(request):
     return render(request, 'home_page.html')

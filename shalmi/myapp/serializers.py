@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Category, SubCategory, Order, OrderItem, ShippingAddress, ShipmentTracking, ShipmentUpdate, CustomUser
+from .models import Product, Category, SubCategory, Order, OrderItem, ShippingAddress, ShipmentTracking, ShipmentUpdate, CustomUser, ProductLabel
 
 # Add these basic serializers first
 class CategorySerializer(serializers.ModelSerializer):
@@ -48,11 +48,24 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         validated_data['owner'] = user
         return super().create(validated_data)
 
+class ProductLabelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductLabel
+        fields = [
+            'is_new_arrival',
+            'is_trending',
+            'is_featured',
+            'is_wholesale',
+            'is_discounted',
+            'is_top_selling'
+        ]
+        
 # Product Serializer
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
     subcategory = SubCategorySerializer()
     owner = serializers.StringRelatedField()
+    labels = ProductLabelSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -70,9 +83,10 @@ class ProductSerializer(serializers.ModelSerializer):
             'image',
             'status',
             'created_at',
-            'updated_at'
+            'updated_at',
+            'labels'
         ]
-# 
+
 # Add these serializers for category creation/update
 
 class CategoryCreateSerializer(serializers.ModelSerializer):
@@ -222,3 +236,5 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'email', 'role']
+
+
