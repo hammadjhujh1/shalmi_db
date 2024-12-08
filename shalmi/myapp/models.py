@@ -77,7 +77,7 @@ class Product(models.Model):
         'CustomUser', 
         on_delete=models.CASCADE,
         related_name='products',
-        limit_choices_to={'role__in': [CustomUser.END_USER, CustomUser.MANAGER, CustomUser.ADMIN]}
+        limit_choices_to={'role__in': [CustomUser.MANAGER, CustomUser.ADMIN]}
     )
     slug = models.SlugField(unique=True, blank=True)
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
@@ -98,11 +98,11 @@ class Product(models.Model):
     def clean(self):
         from django.core.exceptions import ValidationError
         if self.owner.role not in [CustomUser.MANAGER, CustomUser.ADMIN]:
-            raise ValidationError("Only managers and admins can own products.")
+            raise ValidationError("Only managers and admins can create products.")
         super().clean()
 
     def save(self, *args, **kwargs):
-        self.clean()  # Run validation before saving
+        self.clean()
         if not self.slug:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)

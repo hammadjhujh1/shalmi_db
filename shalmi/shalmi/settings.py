@@ -216,7 +216,7 @@ DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 # AWS_S3_REGION_NAME = 'your-region'
 
 # Maximum size of request body
-DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 
 # Maximum size of request body in bytes
-FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB

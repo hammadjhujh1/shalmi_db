@@ -1,25 +1,61 @@
 from rest_framework import serializers
 from .models import Product, Category, SubCategory, Order, OrderItem, ShippingAddress, ShipmentTracking, ShipmentUpdate, CustomUser, ProductLabel
+from decimal import Decimal
+import decimal
 
-# Add these basic serializers first
+# Fix CategorySerializer
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name', 'description', 'slug', 'is_active']
+        fields = ['id', 'name', 'is_active', 'created_at', 'updated_at']
 
+# Fix CategoryCreateSerializer
+class CategoryCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'is_active']
+        read_only_fields = ['id']
+
+# Fix SubCategorySerializer
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
-        fields = ['id', 'name', 'description', 'slug', 'category', 'is_active']
+        fields = ['id', 'name', 'category', 'is_active', 'created_at', 'updated_at']
 
+# Fix SubCategoryCreateSerializer
+class SubCategoryCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubCategory
+        fields = ['id', 'name', 'category', 'is_active']
+        read_only_fields = ['id']
+
+    def validate_category(self, value):
+        if not value.is_active:
+            raise serializers.ValidationError("Cannot add subcategory to inactive category")
+        return value
 # Product Create Serializer
+# Fix ProductCreateSerializer
 class ProductCreateSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=True)
+    price = serializers.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        min_value=Decimal('0.00'),
+        coerce_to_string=False
+    )
+    stock = serializers.IntegerField(min_value=0)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    subcategory = serializers.PrimaryKeyRelatedField(
+        queryset=SubCategory.objects.all(),
+        required=False,
+        allow_null=True
+    )
+
     class Meta:
         model = Product
         fields = [
             'id', 
             'title', 
-            'description',
             'category', 
             'subcategory', 
             'stock', 
@@ -30,22 +66,42 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'owner', 'slug']
 
-    def validate_subcategory(self, value):
-        """
-        Validate that subcategory belongs to the selected category
-        """
-        category_id = self.initial_data.get('category')
-        if value and category_id and value.category_id != int(category_id):
+    def validate(self, data):
+        user = self.context['request'].user
+        if user.role not in [CustomUser.MANAGER, CustomUser.ADMIN]:
             raise serializers.ValidationError(
-                "Selected subcategory does not belong to the selected category"
+                "Only managers and admins can create products."
             )
-        return value
+
+        # Convert price to Decimal if it's a string
+        if 'price' in data and isinstance(data['price'], str):
+            try:
+                data['price'] = Decimal(data['price'])
+            except (TypeError, ValueError, decimal.InvalidOperation):
+                raise serializers.ValidationError({
+                    'price': 'Invalid price format. Must be a valid decimal number.'
+                })
+
+        # Convert stock to integer if it's a string
+        if 'stock' in data and isinstance(data['stock'], str):
+            try:
+                data['stock'] = int(data['stock'])
+            except (TypeError, ValueError):
+                raise serializers.ValidationError({
+                    'stock': 'Invalid stock format. Must be a valid integer.'
+                })
+
+        # Validate category and subcategory relationship
+        if 'category' in data and 'subcategory' in data and data['subcategory']:
+            if data['subcategory'].category != data['category']:
+                raise serializers.ValidationError({
+                    'subcategory': 'Selected subcategory does not belong to the selected category'
+                })
+
+        return data
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        if user.role not in [user.SELLER, user.BOTH, user.MANAGER, user.ADMIN]:
-            raise serializers.ValidationError("You don't have permission to create products")
-        validated_data['owner'] = user
+        validated_data['owner'] = self.context['request'].user
         return super().create(validated_data)
 
 class ProductLabelSerializer(serializers.ModelSerializer):
@@ -73,7 +129,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'id', 
             'title', 
             'slug',
-            'description',
             'owner',
             'category', 
             'subcategory', 
@@ -87,24 +142,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'labels'
         ]
 
-# Add these serializers for category creation/update
 
-class CategoryCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ['id', 'name', 'description', 'is_active']
-        read_only_fields = ['id', 'slug']
-
-class SubCategoryCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SubCategory
-        fields = ['id', 'name', 'description', 'category', 'is_active']
-        read_only_fields = ['id', 'slug']
-
-    def validate_category(self, value):
-        if not value.is_active:
-            raise serializers.ValidationError("Cannot add subcategory to inactive category")
-        return value
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:

@@ -4,7 +4,7 @@ from .models import CustomUser, Product, Category, SubCategory, ShippingAddress,
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets, permissions, status
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from .serializers import (
     CategorySerializer, CategoryCreateSerializer,
@@ -27,6 +27,7 @@ import os
 from .utils import validate_file_type, validate_file_size
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.db.models import Q
 
 @ensure_csrf_cookie
 def get_csrf_token(request):
@@ -142,7 +143,7 @@ def login(request):
 
 # Product ViewSet
 class ProductViewSet(viewsets.ModelViewSet):
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
     def get_serializer_class(self):
@@ -151,41 +152,71 @@ class ProductViewSet(viewsets.ModelViewSet):
         return ProductSerializer
 
     def get_queryset(self):
-        return Product.objects.filter(is_deleted=False)
+        queryset = Product.objects.filter(is_deleted=False)
+        
+        # Get filter parameters from request
+        category_id = self.request.query_params.get('category_id')
+        subcategory_id = self.request.query_params.get('subcategory_id')
+        status = self.request.query_params.get('status')
+        search = self.request.query_params.get('search')
+        min_price = self.request.query_params.get('min_price')
+        max_price = self.request.query_params.get('max_price')
+        
+        # Apply filters
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+            
+        if subcategory_id:
+            queryset = queryset.filter(subcategory_id=subcategory_id)
+            
+        if status:
+            queryset = queryset.filter(status=status)
+            
+        if min_price:
+            queryset = queryset.filter(price__gte=min_price)
+            
+        if max_price:
+            queryset = queryset.filter(price__lte=max_price)
+            
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search) |
+                Q(slug__icontains=search) |
+                Q(category__name__icontains=search) |
+                Q(subcategory__name__icontains=search)
+            ).distinct()
+        
+        # Default ordering
+        return queryset.order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
-        # Handle image upload
-        image = request.FILES.get('image')
-        if image:
-            try:
-                validate_file_type(image)
-                validate_file_size(image)
-            except ValidationError as e:
-                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        print("Content-Type:", request.content_type)
+        print("Request data:", request.data)
+        
+        try:
+            # Create product with initial data
+            serializer = self.get_serializer(data=request.data)
+            if not serializer.is_valid():
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-            # Generate unique filename
-            filename = default_storage.get_available_name(image.name)
-            # Save file
-            file_path = default_storage.save(f'products/{filename}', image)
-            # Add file path to request data
-            request.data['image'] = file_path
-            
-        # Convert string variations to JSON if needed
-        if 'variations' in request.data:
+            # Save the product
             try:
-                if isinstance(request.data['variations'], str):
-                    request.data['variations'] = {'variations': request.data['variations']}
-            except json.JSONDecodeError:
+                product = serializer.save(owner=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                print("Save error:", str(e))
                 return Response(
-                    {'error': 'Invalid variations format'},
+                    {'error': f'Error saving product: {str(e)}'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-        
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print("Error:", str(e))
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -205,6 +236,11 @@ class ProductViewSet(viewsets.ModelViewSet):
             file_path = default_storage.save(f'products/{filename}', image)
             request.data['image'] = file_path
 
+        # Get or create label for the product
+        label = instance.labels.first()
+        if not label:
+            label = ProductLabel.objects.create(product=instance)
+
         # Update label fields from request data
         for field in ['is_new_arrival', 'is_trending', 'is_featured', 
                      'is_wholesale', 'is_discounted', 'is_top_selling']:
@@ -212,7 +248,13 @@ class ProductViewSet(viewsets.ModelViewSet):
                 setattr(label, field, request.data[field])
         
         label.save()
-        return Response(ProductSerializer(product).data)
+
+        # Update the product using the serializer
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(ProductSerializer(instance).data)
 
     @action(detail=True, methods=['patch'])
     def update_labels(self, request, pk=None):
