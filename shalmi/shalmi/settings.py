@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -198,3 +199,24 @@ CORS_ALLOW_HEADERS = [
 # CSRF_COOKIE_SECURE = False
 # CSRF_COOKIE_HTTPONLY = False
 # SESSION_COOKIE_SECURE = False
+
+# Media files configuration
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Optional: Configure storage backend
+# For local development:
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+# For production (example using S3):
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# AWS_ACCESS_KEY_ID = 'your-access-key'
+# AWS_SECRET_ACCESS_KEY = 'your-secret-key'
+# AWS_STORAGE_BUCKET_NAME = 'your-bucket-name'
+# AWS_S3_REGION_NAME = 'your-region'
+
+# Maximum size of request body
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+
+# Maximum size of request body in bytes
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB

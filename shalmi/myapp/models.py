@@ -5,23 +5,17 @@ from django.core.validators import MinValueValidator
 from django.conf import settings
 
 class CustomUser(AbstractUser):
-    SINGLE_PRODUCT_BUYER = 'SPB'
-    WHOLESALE_BUYER = 'WSB'
-    SELLER = 'SLR'
-    BOTH = 'BOTH'
+    END_USER = 'EU'
     MANAGER = 'MGR'
     ADMIN = 'ADM'
 
     ROLE_CHOICES = [
-        (SINGLE_PRODUCT_BUYER, 'Single Product Buyer'),
-        (WHOLESALE_BUYER, 'Wholesale Buyer'),
-        (SELLER, 'Seller'),
-        (BOTH, 'Both (Wholesale Buyer & Seller)'),
+        (END_USER, 'Simple User'),
         (MANAGER, 'Manager'),
         (ADMIN, 'Admin'),
     ]
 
-    role = models.CharField(max_length=4, choices=ROLE_CHOICES, default=SINGLE_PRODUCT_BUYER)
+    role = models.CharField(max_length=4, choices=ROLE_CHOICES, default=END_USER)
 
     # Resolve reverse accessor conflicts
     groups = models.ManyToManyField(
@@ -45,16 +39,9 @@ class CustomUser(AbstractUser):
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(blank=True)
-    slug = models.SlugField(unique=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -64,21 +51,14 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
+    name = models.CharField(max_length=100, unique=True)
     category = models.ForeignKey(Category, related_name="subcategories", on_delete=models.CASCADE)
-    slug = models.SlugField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(f"{self.category.name}-{self.name}")
-        super().save(*args, **kwargs)
-
     class Meta:
-        unique_together = ['name', 'category', 'slug']
+        unique_together = ['name', 'category']
         verbose_name_plural = "Sub Categories"
 
     def __str__(self):
@@ -92,15 +72,14 @@ class Product(models.Model):
         ('archived', 'Archived')
     ]
 
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, unique=True)
     owner = models.ForeignKey(
         'CustomUser', 
         on_delete=models.CASCADE,
         related_name='products',
-        limit_choices_to={'role__in': [CustomUser.SELLER, CustomUser.BOTH, CustomUser.MANAGER, CustomUser.ADMIN]}
+        limit_choices_to={'role__in': [CustomUser.END_USER, CustomUser.MANAGER, CustomUser.ADMIN]}
     )
     slug = models.SlugField(unique=True, blank=True)
-    description = models.TextField(blank=True)
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     subcategory = models.ForeignKey(SubCategory, related_name='products', on_delete=models.SET_NULL, null=True, blank=True)
     stock = models.PositiveIntegerField(validators=[MinValueValidator(0)])
@@ -118,8 +97,8 @@ class Product(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
-        if self.owner.role not in [CustomUser.SELLER, CustomUser.BOTH, CustomUser.MANAGER, CustomUser.ADMIN]:
-            raise ValidationError("Only sellers, admins, and managers can own products.")
+        if self.owner.role not in [CustomUser.MANAGER, CustomUser.ADMIN]:
+            raise ValidationError("Only managers and admins can own products.")
         super().clean()
 
     def save(self, *args, **kwargs):
@@ -137,6 +116,47 @@ class Product(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+class ProductLabel(models.Model):
+    products = models.ManyToManyField(
+        Product,
+        related_name='labels',
+        blank=True
+    )
+    name = models.CharField(max_length=100)  # To identify the label type
+    is_top_selling = models.BooleanField(default=False)
+    is_trending = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
+    is_wholesale = models.BooleanField(default=False)
+    is_discounted = models.BooleanField(default=False)
+    is_new_arrival = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.products.count()} products"
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.is_new_arrival = True
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Product Label'
+        verbose_name_plural = 'Product Labels'
+
+    @property
+    def label_count(self):
+        return sum([
+            self.is_top_selling,
+            self.is_trending,
+            self.is_featured,
+            self.is_wholesale,
+            self.is_discounted,
+            self.is_new_arrival
+        ])
+
 
 
 class Order(models.Model):
@@ -231,44 +251,3 @@ class ShipmentUpdate(models.Model):
 
     def __str__(self):
         return f"{self.shipment.tracking_number} - {self.status} at {self.timestamp}"
-
-
-class ProductLabel(models.Model):
-    products = models.ManyToManyField(
-        Product,
-        related_name='labels',
-        blank=True
-    )
-    name = models.CharField(max_length=100)  # To identify the label type
-    is_top_selling = models.BooleanField(default=False)
-    is_trending = models.BooleanField(default=False)
-    is_featured = models.BooleanField(default=False)
-    is_wholesale = models.BooleanField(default=False)
-    is_discounted = models.BooleanField(default=False)
-    is_new_arrival = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.name} - {self.products.count()} products"
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.is_new_arrival = True
-        super().save(*args, **kwargs)
-
-    class Meta:
-        ordering = ['-created_at']
-        verbose_name = 'Product Label'
-        verbose_name_plural = 'Product Labels'
-
-    @property
-    def label_count(self):
-        return sum([
-            self.is_top_selling,
-            self.is_trending,
-            self.is_featured,
-            self.is_wholesale,
-            self.is_discounted,
-            self.is_new_arrival
-        ])

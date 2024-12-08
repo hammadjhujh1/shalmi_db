@@ -22,23 +22,67 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
+from django.core.files.storage import default_storage
+import os
+from .utils import validate_file_type, validate_file_size
+from django.core.exceptions import ValidationError
+from django.views.decorators.csrf import ensure_csrf_cookie
 
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    return JsonResponse({
+        'csrfToken': request.META.get('CSRF_COOKIE'),
+        'status': 'success'
+    })
+
+@ensure_csrf_cookie
 def signup(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        trade_role = request.POST.get('trade-role')
+        try:
+            data = json.loads(request.body)
+            email = data.get('email')
+            password = data.get('password')
 
-        # Create a new user
-        user = CustomUser(email=email, username=email)  # You can customize username as needed
-        user.set_password(password)  # Hash the password
-        user.role = trade_role  # Assign the trade role
-        user.save()  # Save the user to the database
+            if not email or not password:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Email and password are required'
+                }, status=400)
 
-        messages.success(request, "Account created successfully. Please log in.")
-        return redirect('login')  # Redirect to the login page
+            # Check if user already exists
+            if CustomUser.objects.filter(email=email).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Email already registered'
+                }, status=400)
 
-    return render(request, 'signup.html')  # Render the signup template
+            # Create new user
+            user = CustomUser.objects.create_user(
+                email=email,
+                password=password,
+                username=email  # Using email as username
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Account created successfully'
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid request data'
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Method not allowed'
+    }, status=405)
 
 @csrf_exempt
 def login(request):
@@ -98,6 +142,7 @@ def login(request):
 
 # Product ViewSet
 class ProductViewSet(viewsets.ModelViewSet):
+    parser_classes = (MultiPartParser, FormParser)
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
     def get_serializer_class(self):
@@ -109,6 +154,22 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Product.objects.filter(is_deleted=False)
 
     def create(self, request, *args, **kwargs):
+        # Handle image upload
+        image = request.FILES.get('image')
+        if image:
+            try:
+                validate_file_type(image)
+                validate_file_size(image)
+            except ValidationError as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Generate unique filename
+            filename = default_storage.get_available_name(image.name)
+            # Save file
+            file_path = default_storage.save(f'products/{filename}', image)
+            # Add file path to request data
+            request.data['image'] = file_path
+            
         # Convert string variations to JSON if needed
         if 'variations' in request.data:
             try:
@@ -125,6 +186,33 @@ class ProductViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+        # Handle image replacement
+        image = request.FILES.get('image')
+        if image:
+            # Delete old image if it exists
+            if instance.image:
+                try:
+                    default_storage.delete(instance.image.path)
+                except Exception:
+                    pass  # Handle case where file is missing
+            
+            # Save new image
+            filename = default_storage.get_available_name(image.name)
+            file_path = default_storage.save(f'products/{filename}', image)
+            request.data['image'] = file_path
+
+        # Update label fields from request data
+        for field in ['is_new_arrival', 'is_trending', 'is_featured', 
+                     'is_wholesale', 'is_discounted', 'is_top_selling']:
+            if field in request.data:
+                setattr(label, field, request.data[field])
+        
+        label.save()
+        return Response(ProductSerializer(product).data)
 
     @action(detail=True, methods=['patch'])
     def update_labels(self, request, pk=None):
@@ -146,6 +234,18 @@ class ProductViewSet(viewsets.ModelViewSet):
         
         label.save()
         return Response(ProductSerializer(product).data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+        # Delete associated image file
+        if instance.image:
+            try:
+                default_storage.delete(instance.image.path)
+            except Exception:
+                pass  # Handle case where file is missing
+        
+        return super().destroy(request, *args, **kwargs)
 
 # Category ViewSet
 class CategoryViewSet(viewsets.ModelViewSet):
