@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import CustomUser, Product, Category, SubCategory, ShippingAddress, ShipmentTracking, Order, OrderItem, ProductLabel
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets, permissions, status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -28,6 +28,7 @@ from .utils import validate_file_type, validate_file_size
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.db.models import Q
+from django.views.decorators.http import require_http_methods
 
 @ensure_csrf_cookie
 def get_csrf_token(request):
@@ -139,7 +140,20 @@ def login(request):
         'message': "Method not allowed"
     }, status=405)
 
-
+@csrf_exempt
+@require_http_methods(["POST"])
+def logout_user(request):
+    try:
+        logout(request)
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Successfully logged out'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
 
 # Product ViewSet
 class ProductViewSet(viewsets.ModelViewSet):

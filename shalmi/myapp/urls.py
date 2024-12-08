@@ -80,4 +80,5 @@ urlpatterns = [
     path('api/get-csrf-token/', views.get_csrf_token, name='get-csrf-token'),
     path('api/signup/', views.signup, name='signup'),
     path('api/upload/', ProductViewSet.as_view({'post': 'create'}), name='product-upload'),
+    path('logout/', views.logout_user, name='logout'),
 ]
