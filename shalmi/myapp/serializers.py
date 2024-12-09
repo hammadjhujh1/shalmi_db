@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Category, SubCategory, Order, OrderItem, ShippingAddress, ShipmentTracking, ShipmentUpdate, CustomUser, ProductLabel
+from .models import Product, Category, SubCategory, Order, OrderItem, ShippingAddress, ShipmentTracking, ShipmentUpdate, CustomUser, ProductLabel, Cart, CartItem
 from decimal import Decimal
 import decimal
 
@@ -207,15 +207,28 @@ class ShippingAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShippingAddress
         fields = [
-            'id', 'full_name', 'phone_number', 'street_address', 
-            'apartment', 'city', 'state', 'postal_code', 'country',
-            'is_default'
+            'id', 'full_name', 'phone_number', 
+            'address_line1', 'address_line2', 
+            'city', 'state', 'postal_code', 
+            'country', 'is_default'
         ]
         read_only_fields = ['id']
+        extra_kwargs = {
+            # Required fields
+            'full_name': {'required': True},
+            'phone_number': {'required': True},
+            'address_line1': {'required': True},
+            # Optional fields
+            'address_line2': {'required': False},
+            'city': {'required': False},
+            'state': {'required': False},
+            'postal_code': {'required': False},
+            'country': {'required': False},
+            'is_default': {'required': False}
+        }
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        validated_data['user'] = user
+        validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
 
 class ShipmentUpdateSerializer(serializers.ModelSerializer):
@@ -274,5 +287,42 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'email', 'role']
+
+class CartItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.IntegerField(write_only=True)
+    subtotal = serializers.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        read_only=True
+    )
+
+    class Meta:
+        model = CartItem
+        fields = [
+            'id', 'product', 'product_id', 'quantity', 
+            'variation', 'subtotal', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def validate_quantity(self, value):
+        if value < 1:
+            raise serializers.ValidationError("Quantity must be at least 1")
+        return value
+
+
+class CartSerializer(serializers.ModelSerializer):
+    items = CartItemSerializer(many=True, read_only=True)
+    total_price = serializers.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        read_only=True
+    )
+    total_items = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'items', 'total_price', 'total_items', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 

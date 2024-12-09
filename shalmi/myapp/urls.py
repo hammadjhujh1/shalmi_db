@@ -1,9 +1,7 @@
-from django.urls import path
-from . import views
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .views import ProductViewSet, CategoryViewSet, SubCategoryViewSet, OrderViewSet, ShippingAddressViewSet, ShipmentTrackingViewSet, NewArrivalsViewSet, UserViewSet, TrendingProductsViewSet, WholesaleProductsViewSet, FeaturedProductsViewSet, DiscountedProductsViewSet, TopSellingProductsViewSet
+from .views import ProductViewSet, CategoryViewSet, SubCategoryViewSet, OrderViewSet, ShippingAddressViewSet, ShipmentTrackingViewSet, NewArrivalsViewSet, UserViewSet, TrendingProductsViewSet, WholesaleProductsViewSet, FeaturedProductsViewSet, DiscountedProductsViewSet, TopSellingProductsViewSet, ProductDetailView, CartViewSet
 
 # Initialize the router and register the viewsets
 router = DefaultRouter()
@@ -20,17 +18,27 @@ router.register(r'wholesale', WholesaleProductsViewSet, basename='wholesale')
 router.register(r'featured', FeaturedProductsViewSet, basename='featured')
 router.register(r'discounted', DiscountedProductsViewSet, basename='discounted')
 router.register(r'top-selling', TopSellingProductsViewSet, basename='top-selling')
+router.register(r'cart', CartViewSet, basename='cart')
 
 
 urlpatterns = [
-    path('all/', views.home_page, name='home_page'),
+    # API routes
+    path('api/', include([
+        # Product detail route must come BEFORE router.urls
+        path('products/<slug:slug>/', ProductDetailView.as_view(), name='product-detail'),
+        path('', include(router.urls)),
+        path('get-csrf-token/', views.get_csrf_token, name='get-csrf-token'),
+        path('signup/', views.signup, name='signup'),
+        path('upload/', ProductViewSet.as_view({'post': 'create'}), name='product-upload'),
+    ])),
+    
+    # Auth routes
     path('signup/', views.signup, name='signup'),
     path('login/', views.login, name='login'),
+    path('logout/', views.logout_user, name='logout'),
     
-
-    # Include the router's URLs for the API endpoints
-    path('api/', include(router.urls)),
-
+    # Other routes
+    path('all/', views.home_page, name='home_page'),
     path('admin/', views.admin_dashboard, name='admin_dashboard'),
     path('buyer_dashboard/', views.buyer_dashboard, name='buyer_dashboard'),
     path('analytics_dashboard/', views.analytics_dashboard, name='analytics_dashboard'),
@@ -70,15 +78,4 @@ urlpatterns = [
     path('trending_top_selling_products/', views.trending_top_selling_products, name='trending_top_selling_products'),
     path('upload_product/', views.upload_product, name='upload_product'),
     path('users_management/', views.users_management, name='users_management'),
-
-
-
-
-
-
-    path('', views.all_pages, name='all_pages'),
-    path('api/get-csrf-token/', views.get_csrf_token, name='get-csrf-token'),
-    path('api/signup/', views.signup, name='signup'),
-    path('api/upload/', ProductViewSet.as_view({'post': 'create'}), name='product-upload'),
-    path('logout/', views.logout_user, name='logout'),
 ]

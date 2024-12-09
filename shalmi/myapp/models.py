@@ -191,27 +191,24 @@ class OrderItem(models.Model):
 
 
 class ShippingAddress(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=15)
-    street_address = models.CharField(max_length=255)
-    apartment = models.CharField(max_length=255, blank=True)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    postal_code = models.CharField(max_length=20)
-    country = models.CharField(max_length=100)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=255)  # Required
+    phone_number = models.CharField(max_length=20)  # Required
+    address_line1 = models.CharField(max_length=255)  # Required
+    address_line2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    postal_code = models.CharField(max_length=20, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
     is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def save(self, *args, **kwargs):
-        if self.is_default:
-            # Set all other addresses of this user to non-default
-            ShippingAddress.objects.filter(user=self.user).update(is_default=False)
-        super().save(*args, **kwargs)
+    class Meta:
+        ordering = ['-is_default', '-created_at']
 
     def __str__(self):
-        return f"{self.full_name} - {self.city}, {self.country}"
+        return f"{self.full_name} - {self.address_line1}"
 
 
 class ShipmentTracking(models.Model):
@@ -251,3 +248,39 @@ class ShipmentUpdate(models.Model):
 
     def __str__(self):
         return f"{self.shipment.tracking_number} - {self.status} at {self.timestamp}"
+
+
+class Cart(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Cart for {self.user.username}"
+
+    @property
+    def total_price(self):
+        return sum(item.subtotal for item in self.items.all())
+
+    @property
+    def total_items(self):
+        return self.items.count()
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    variation = models.JSONField(null=True, blank=True)  # For product variations
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('cart', 'product', 'variation')
+
+    def __str__(self):
+        return f"{self.quantity}x {self.product.title} in {self.cart}"
+
+    @property
+    def subtotal(self):
+        return self.product.price * self.quantity

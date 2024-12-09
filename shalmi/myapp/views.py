@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import CustomUser, Product, Category, SubCategory, ShippingAddress, ShipmentTracking, Order, OrderItem, ProductLabel
+from .models import CustomUser, Product, Category, SubCategory, ShippingAddress, ShipmentTracking, Order, OrderItem, ProductLabel, Cart, CartItem
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets, permissions, status
@@ -11,7 +11,9 @@ from .serializers import (
     SubCategorySerializer, SubCategoryCreateSerializer,
     ProductSerializer, ProductCreateSerializer,
     ShippingAddressSerializer, ShipmentTrackingSerializer,
-    OrderSerializer, UserSerializer, UserCreateSerializer, UserUpdateSerializer, ProductLabelSerializer
+    OrderSerializer, UserSerializer, UserCreateSerializer, UserUpdateSerializer, ProductLabelSerializer,
+    CartSerializer, CartItemSerializer,
+    ShipmentUpdateSerializer
 )
 from .permissions import IsAdminManagerOrReadOnly, IsAdminUser
 import json
@@ -29,6 +31,9 @@ from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.db.models import Q
 from django.views.decorators.http import require_http_methods
+from rest_framework import generics
+from rest_framework.exceptions import NotFound
+from django.core.exceptions import ObjectDoesNotExist
 
 @ensure_csrf_cookie
 def get_csrf_token(request):
@@ -580,12 +585,91 @@ class ShippingAddressViewSet(viewsets.ModelViewSet):
 class ShipmentTrackingViewSet(viewsets.ModelViewSet):
     serializer_class = ShipmentTrackingSerializer
     permission_classes = [IsAuthenticated]
+    lookup_field = 'tracking_number'
 
     def get_queryset(self):
         user = self.request.user
         if user.role in [user.MANAGER, user.ADMIN]:
             return ShipmentTracking.objects.all()
         return ShipmentTracking.objects.filter(order__user=user)
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            
+            # Check permissions
+            if not request.user.role in [request.user.MANAGER, request.user.ADMIN]:
+                if instance.order.user != request.user:
+                    return Response(
+                        {'error': 'You do not have permission to view this tracking information'},
+                        status=status.HTTP_403_FORBIDDEN
+                    )
+
+            # Return tracking information
+            return Response({
+                'tracking_number': instance.tracking_number,
+                'order_id': instance.order.id,
+                'status': instance.status,
+                'carrier': instance.carrier,
+                'estimated_delivery': instance.estimated_delivery,
+                'actual_delivery': instance.actual_delivery,
+                'last_updated': instance.updated_at,
+                'order_details': {
+                    'total_amount': instance.order.total_amount,
+                    'order_date': instance.order.created_at,
+                    'shipping_address': instance.order.shipping_address,
+                }
+            })
+
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    @action(detail=False, methods=['get'])
+    def track_order(self, request):
+        """Alternative method to track order using query parameters"""
+        tracking_number = request.query_params.get('tracking_number')
+        order_id = request.query_params.get('order_id')
+
+        try:
+            if tracking_number:
+                instance = ShipmentTracking.objects.get(tracking_number=tracking_number)
+            elif order_id:
+                instance = ShipmentTracking.objects.get(order_id=order_id)
+            else:
+                return Response(
+                    {'error': 'Please provide either tracking_number or order_id'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Check permissions
+            if not request.user.role in [request.user.MANAGER, request.user.ADMIN]:
+                if instance.order.user != request.user:
+                    return Response(
+                        {'error': 'You do not have permission to view this tracking information'},
+                        status=status.HTTP_403_FORBIDDEN
+                    )
+
+            # Return tracking information
+            return Response({
+                'tracking_number': instance.tracking_number,
+                'order_id': instance.order.id,
+                'status': instance.status,
+                'carrier': instance.carrier,
+                'estimated_delivery': instance.estimated_delivery,
+                'actual_delivery': instance.actual_delivery,
+                'last_updated': instance.updated_at,
+                'order_details': {
+                    'total_amount': instance.order.total_amount,
+                    'order_date': instance.order.created_at,
+                    'shipping_address': instance.order.shipping_address,
+                }
+            })
+
+        except ShipmentTracking.DoesNotExist:
+            raise NotFound(detail="Tracking information not found")
 
     @action(detail=True, methods=['post'])
     def add_update(self, request, pk=None):
@@ -623,12 +707,194 @@ class OrderViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @action(detail=False, methods=['POST'], url_path='place-order')
+    def place_order(self, request):
+        """Place a new order using cart items and shipping address"""
+        try:
+            # Get shipping address
+            shipping_address_id = request.data.get('shipping_address_id')
+            if not shipping_address_id:
+                return Response(
+                    {'error': 'Shipping address is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Verify shipping address belongs to user
+            try:
+                shipping_address = ShippingAddress.objects.get(
+                    id=shipping_address_id,
+                    user=request.user
+                )
+            except ShippingAddress.DoesNotExist:
+                return Response(
+                    {'error': 'Invalid shipping address'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Get user's cart
+            cart = Cart.objects.filter(user=request.user).first()
+            if not cart or not cart.items.exists():
+                return Response(
+                    {'error': 'Cart is empty'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Create order
+            order = Order.objects.create(
+                user=request.user,
+                shipping_address=shipping_address.address_line1,  # Use the address string
+                status='pending',
+                total_amount=0  # Will be calculated below
+            )
+
+            total_amount = 0
+            # Create order items from cart items
+            for cart_item in cart.items.all():
+                # Verify stock availability
+                if cart_item.quantity > cart_item.product.stock:
+                    order.delete()  # Rollback order creation
+                    return Response(
+                        {
+                            'error': f'Not enough stock for {cart_item.product.title}',
+                            'available': cart_item.product.stock
+                        },
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                # Calculate item total
+                item_total = cart_item.quantity * cart_item.product.price
+                
+                # Create order item without total field
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity=cart_item.quantity,
+                    price=cart_item.product.price,
+                    variation=cart_item.variation
+                )
+
+                # Update product stock
+                cart_item.product.stock -= cart_item.quantity
+                cart_item.product.save()
+
+                total_amount += item_total
+
+            # Update order total
+            order.total_amount = total_amount
+            order.save()
+
+            # Create shipment tracking with a generated tracking number
+            tracking_number = f"TRACK-{order.id}-{timezone.now().strftime('%Y%m%d')}"
+            ShipmentTracking.objects.create(
+                order=order,
+                tracking_number=tracking_number,
+                carrier="Default Carrier",  # You can modify this as needed
+                status='pending'
+            )
+
+            # Clear the cart
+            cart.items.all().delete()
+
+            return Response({
+                'status': 'success',
+                'message': 'Order placed successfully',
+                'order_id': order.id,
+                'tracking_number': tracking_number,
+                'total_amount': total_amount
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
     @action(detail=True, methods=['post'])
     def cancel_order(self, request, pk=None):
         order = self.get_object()
         order.status = 'cancelled'
         order.save()
         return Response({'status': 'order cancelled'})
+
+    @action(detail=False, methods=['post'], url_path='create')
+    def create_order(self, request):
+        try:
+            # Validate required fields
+            shipping_address = request.data.get('shipping_address')
+            items = request.data.get('items')
+            
+            if not shipping_address or not items:
+                return Response({
+                    'error': 'Shipping address and items are required'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Create the order
+            order = Order.objects.create(
+                user=request.user,
+                shipping_address=shipping_address,
+                status='pending',
+                total_amount=0
+            )
+
+            total_amount = 0
+            # Create order items
+            for item in items:
+                product = Product.objects.get(id=item['product_id'])
+                quantity = item.get('quantity', 1)
+                
+                # Verify stock
+                if product.stock < quantity:
+                    order.delete()
+                    return Response({
+                        'error': f'Not enough stock for {product.title}',
+                        'available': product.stock
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+                # Create order item
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=quantity,
+                    price=product.price,
+                    variation=item.get('variation', '')
+                )
+
+                # Update product stock
+                product.stock -= quantity
+                product.save()
+
+                # Update total amount
+                total_amount += quantity * product.price
+
+            # Update order total
+            order.total_amount = total_amount
+            order.save()
+
+            # Create shipment tracking
+            tracking_number = f"TRACK-{order.id}-{timezone.now().strftime('%Y%m%d')}"
+            ShipmentTracking.objects.create(
+                order=order,
+                tracking_number=tracking_number,
+                carrier="Default Carrier",
+                status='pending'
+            )
+
+            return Response({
+                'status': 'success',
+                'message': 'Order created successfully',
+                'order_id': order.id,
+                'tracking_number': tracking_number,
+                'total_amount': total_amount
+            }, status=status.HTTP_201_CREATED)
+
+        except Product.DoesNotExist:
+            return Response({
+                'error': 'Product not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -697,3 +963,121 @@ class UserViewSet(viewsets.ModelViewSet):
         user.save()
         return Response({"detail": "User account has been deactivated."}, 
                       status=status.HTTP_204_NO_CONTENT)
+
+class ProductDetailView(generics.RetrieveAPIView):
+    serializer_class = ProductSerializer
+    lookup_field = 'slug'
+    
+    def get_queryset(self):
+        # Debug print
+        print(f"Requested slug: {self.kwargs.get('slug')}")
+        
+        queryset = Product.objects.filter(is_deleted=False)
+        
+        # If user is admin/manager, show all non-deleted products
+        if self.request.user.is_authenticated and self.request.user.role in ['admin', 'manager']:
+            return queryset
+            
+        # For regular users, only show published products
+        return queryset.filter(status='published')
+
+class CartViewSet(viewsets.ModelViewSet):
+    serializer_class = CartSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+
+    @action(detail=False, methods=['POST'])
+    def add(self, request):
+        try:
+            product_id = request.data.get('product_id')
+            quantity = int(request.data.get('quantity', 1))
+            variation = request.data.get('variation')
+            
+            # Validate product
+            try:
+                product = Product.objects.get(id=product_id, is_deleted=False, status='published')
+            except Product.DoesNotExist:
+                return Response(
+                    {'error': 'Product not found or unavailable'}, 
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Check stock
+            if product.stock < quantity:
+                return Response(
+                    {'error': 'Not enough stock available'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Get or create cart
+            cart, _ = Cart.objects.get_or_create(user=request.user)
+            
+            # Get or create cart item
+            cart_item, created = CartItem.objects.get_or_create(
+                cart=cart,
+                product=product,
+                variation=variation,
+                defaults={'quantity': quantity}
+            )
+
+            # If item already existed, update quantity
+            if not created:
+                cart_item.quantity += quantity
+                cart_item.save()
+
+            serializer = CartItemSerializer(cart_item)
+            return Response({
+                'status': 'success',
+                'message': 'Item added to cart',
+                'cart_item': serializer.data
+            })
+
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @action(detail=False, methods=['DELETE'])
+    def clear(self, request):
+        """Clear all items from cart"""
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            cart.items.all().delete()
+            return Response({'status': 'Cart cleared'})
+        return Response({'status': 'Cart is already empty'})
+
+    @action(detail=True, methods=['PATCH'], url_path='items/(?P<item_id>[^/.]+)')
+    def update_item(self, request, item_id=None, pk=None):
+        """Update quantity of specific cart item"""
+        try:
+            cart_item = CartItem.objects.get(
+                cart__user=request.user,
+                id=item_id
+            )
+            
+            quantity = request.data.get('quantity', cart_item.quantity)
+            
+            if quantity <= 0:
+                cart_item.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+                
+            if quantity > cart_item.product.stock:
+                return Response(
+                    {'error': 'Not enough stock available'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+            cart_item.quantity = quantity
+            cart_item.save()
+            
+            serializer = CartItemSerializer(cart_item)
+            return Response(serializer.data)
+            
+        except CartItem.DoesNotExist:
+            return Response(
+                {'error': 'Cart item not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
