@@ -163,7 +163,7 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+    "http://localhost:5173","https://shalmi-vue-git-main-hammad-tufails-projects-465fadb7.vercel.app"
 ]
 
 CORS_ALLOW_CREDENTIALS = True

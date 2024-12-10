@@ -1081,3 +1081,23 @@ class CartViewSet(viewsets.ModelViewSet):
                 {'error': 'Cart item not found'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+    @action(detail=True, methods=['DELETE'], url_path='items/(?P<item_id>[^/.]+)')
+    def delete_item(self, request, item_id=None, pk=None):
+        """Delete specific item from cart"""
+        try:
+            cart_item = CartItem.objects.get(
+                cart__user=request.user,
+                id=item_id
+            )
+            cart_item.delete()
+            return Response(
+                {'status': 'Item removed from cart'},
+                status=status.HTTP_204_NO_CONTENT
+            )
+            
+        except CartItem.DoesNotExist:
+            return Response(
+                {'error': 'Cart item not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
