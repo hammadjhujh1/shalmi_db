@@ -79,16 +79,30 @@ WSGI_APPLICATION = "shalmi.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'shalmidb',
+#         'USER': 'postgres',
+#         'PASSWORD': 'spade',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shalmidb',
-        'USER': 'postgres',
-        'PASSWORD': 'spade',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': 'shalmi_db_render',      # Database name from screenshot
+        'USER': 'shalmi_render',         # Username from screenshot
+        'PASSWORD': 'Gr220ZsjasJkQlmw2iKEj3oPPGLixmLl', # Use the password from Render dashboard
+        'HOST': 'dpg-ctcv21tumphs73b8f0qg-a',  # Hostname from screenshot
+        'PORT': '5432',                  # Port from screenshot
     }
 }
+
 
 
 # Password validation
