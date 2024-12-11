@@ -163,7 +163,11 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173","https://shalmi-vue-git-main-hammad-tufails-projects-465fadb7.vercel.app", "shalmi-db.onrender.com"
+    "http://localhost:5173",
+    "https://shalmi-vue.vercel.app",
+    "https://shalmi-db.onrender.com",
+    "https://www.shalmionline.pk",
+    "https://shalmionline.pk"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -171,6 +175,9 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "https://shalmi-vue.vercel.app",
+    "https://www.shalmionline.pk",
+    "https://shalmionline.pk"
 ]
 
 # Additional CORS settings that might help
