@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-^c0!%xh3btp#x2b#(f$-^j8k5jf3=^*s_tjq^$qkd1j^k&e4cq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["shalmi-db.onrender.com", "shalmionline.pk"]
 
 
 # Application definition
