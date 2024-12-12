@@ -297,16 +297,53 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(ProductSerializer(product).data)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        
-        # Delete associated image file
-        if instance.image:
-            try:
-                default_storage.delete(instance.image.path)
-            except Exception:
-                pass  # Handle case where file is missing
-        
-        return super().destroy(request, *args, **kwargs)
+        try:
+            instance = self.get_object()
+            
+            # Perform soft delete instead of hard delete
+            instance.is_deleted = True
+            instance.status = 'archived'
+            instance.save()
+
+            return Response(
+                {'message': 'Product successfully deleted'},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def partial_update(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            
+            # Handle status update
+            if 'status' in request.data:
+                instance.status = request.data['status']
+                instance.save()
+                return Response(
+                    {'message': f'Product status updated to {instance.status}'},
+                    status=status.HTTP_200_OK
+                )
+
+            # Handle other partial updates
+            serializer = self.get_serializer(
+                instance, 
+                data=request.data, 
+                partial=True
+            )
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+
+            return Response(serializer.data)
+
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 # Category ViewSet
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -934,6 +971,34 @@ class UserViewSet(viewsets.ModelViewSet):
             return CustomUser.objects.all()
         return CustomUser.objects.filter(id=user.id)
 
+    def destroy(self, request, *args, **kwargs):
+        """
+        Soft delete user account
+        """
+        try:
+            user = self.get_object()
+            
+            # Prevent self-deletion for admin users
+            if request.user == user and request.user.role == CustomUser.ADMIN:
+                return Response(
+                    {"error": "Admin users cannot delete their own accounts."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            # Soft delete
+            user.is_active = False
+            user.save()
+
+            return Response(
+                {"message": "User account has been deactivated successfully."},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
     @action(detail=False, methods=['get'])
     def me(self, request):
         """
@@ -953,16 +1018,6 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        """
-        Soft delete user account
-        """
-        user = self.get_object()
-        user.is_active = False
-        user.save()
-        return Response({"detail": "User account has been deactivated."}, 
-                      status=status.HTTP_204_NO_CONTENT)
 
 class ProductDetailView(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
