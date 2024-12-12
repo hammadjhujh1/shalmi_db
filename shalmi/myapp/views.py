@@ -35,14 +35,14 @@ from rest_framework import generics
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ObjectDoesNotExist
 
-@ensure_csrf_cookie
+# @ensure_csrf_cookie
 def get_csrf_token(request):
     return JsonResponse({
         'csrfToken': request.META.get('CSRF_COOKIE'),
         'status': 'success'
     })
 
-@ensure_csrf_cookie
+# @ensure_csrf_cookie
 def signup(request):
     if request.method == 'POST':
         try:
@@ -91,7 +91,7 @@ def signup(request):
         'message': 'Method not allowed'
     }, status=405)
 
-@csrf_exempt
+# @csrf_exempt
 def login(request):
     if request.method == 'POST':
         try:
@@ -145,7 +145,7 @@ def login(request):
         'message': "Method not allowed"
     }, status=405)
 
-@csrf_exempt
+# @csrf_exempt
 @require_http_methods(["POST"])
 def logout_user(request):
     try:
