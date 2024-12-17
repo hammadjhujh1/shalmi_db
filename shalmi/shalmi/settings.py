@@ -56,6 +56,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = "shalmi.urls"
@@ -185,12 +186,16 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
+
+
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://shalmi-vue.vercel.app",
     "https://shalmi-db.onrender.com",
     "https://www.shalmionline.pk",
-    "https://shalmionline.pk"
+    "https://shalmionline.pk",
+    "http://localhost:3000"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -200,7 +205,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://shalmi-vue.vercel.app",
     "https://www.shalmionline.pk",
-    "https://shalmionline.pk"
+    "https://shalmionline.pk",
+    "http://localhost:3000"
 ]
 
 # Additional CORS settings that might help
