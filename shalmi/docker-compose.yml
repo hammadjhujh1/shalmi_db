@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: shalmi_db_render
+      POSTGRES_USER: shalmi_render
+      POSTGRES_PASSWORD: Gr220ZsjasJkQlmw2iKEj3oPPGLixmLl
+
+  backend:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://shalmi_render:Gr220ZsjasJkQlmw2iKEj3oPPGLixmLl@db:5432/shalmi_db_render
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

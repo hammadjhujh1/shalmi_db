@@ -7,5 +7,5 @@ python-dotenv
 python-magic
 libmagic
 gunicorn
-psycopg2-binary
 pillow
+dj-database-url

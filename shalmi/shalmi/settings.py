@@ -14,6 +14,9 @@ from pathlib import Path
 from datetime import timedelta
 import os
 
+import dj_database_url
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +30,7 @@ SECRET_KEY = "django-insecure-^c0!%xh3btp#x2b#(f$-^j8k5jf3=^*s_tjq^$qkd1j^k&e4cq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["shalmi-db.onrender.com", "shalmionline.pk"]
+ALLOWED_HOSTS = ["shalmi-db.onrender.com", "shalmionline.pk",'localhost']
 
 
 # Application definition
@@ -103,6 +106,12 @@ DATABASES = {
     }
 }
 
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
+}
 
 
 # Password validation
